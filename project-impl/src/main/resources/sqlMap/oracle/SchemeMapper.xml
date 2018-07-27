@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.SchemeMapper">
+
+<!-- 模糊查询 -->
+		<sql id="sql_Where">
+			<where>
+				<if test="condition.fileName != null"> s.FILE_NAME like concat('%',concat(#{condition.fileName},'%'))</if>
+				<if test="condition.fileType != null">and s.FILE_TYPE like concat('%',concat(#{condition.fileType},'%'))</if>
+				<if test="condition.code != null">and s.CODE = #{condition.code} </if>
+			</where>
+		</sql>
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.Scheme" id="schemeMap">
+				<id property="id" column="ID"/>
+				<result property="fileName" column="FILE_NAME"/>
+				<result property="uploadTime" column="UPLOAD_TIME"/>
+				<result property="uploader" column="UPLOADER"/>
+				<result property="fileDesc" column="FILE_DESC"/>
+				<result property="fileType" column="FILE_TYPE"/>
+				<result property="status" column="STATUS"/>
+				<result property="code" column="CODE"/>
+		</resultMap>
+		<!-- 查询所有 -->
+		<select id="queryListForPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="schemeMap">
+				<include refid="common.Oracle_Pagination_Head" />
+					SELECT
+					S.ID,
+					S.FILE_NAME,
+					S.UPLOAD_TIME,
+					S.UPLOADER,
+					S.FILE_DESC,
+					S.FILE_TYPE,
+					S.STATUS,
+					S.CODE
+					FROM
+					PROJECT_SCHEME S
+
+					<include refid="sql_Where"/>
+				<include refid="common.Oracle_Pagination_Tail" />
+		</select>
+
+
+		<!-- 查询总条数 -->
+		<select id="getTotalCount" resultType="int">
+			select count(*) as total from PROJECT_SCHEME
+		</select>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.Scheme">
+
+		insert into PROJECT_SCHEME
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  "ID",
+			  </if>
+			<if test="projectName != null">
+				"NAME",
+			</if>
+			<if test="projectType != null">
+				"TYPE",
+			</if>
+			<if test="projectDetail != null">
+				"DETAIL",
+			</if>
+			<if test="projectTotalUser != null">
+				"USER_TOTAL",
+			</if>
+			<if test="projectCreateTime != null">
+				"CREATE_TIME",
+			</if>
+			<if test="projectEndTime != null">
+				"END_TIME",
+			</if>
+			<if test="leader != null">
+				"LEADER",
+			</if>
+			<if test="completeNumber != null">
+				"COMPLETE_NUMBER",
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  #{id,jdbcType=VARCHAR},
+			  </if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="projectType != null">
+				#{projectType,jdbcType=VARCHAR},
+			</if>
+			<if test="projectDetail != null">
+				#{projectDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="projectTotalUser != null">
+				#{projectTotalUser,jdbcType=NUMERIC},
+			</if>
+			<if test="projectCreateTime != null">
+				SYSDATE,
+			</if>
+			<if test="projectEndTime != null">
+				#{projectEndTime,jdbcType=DATE},
+			</if>
+			<if test="leader != null">
+				#{leader.account,jdbcType=VARCHAR,javaType=String},
+			</if>
+			<if test="completeNumber != null">
+				#{completeNumber,jdbcType=NUMERIC},
+			</if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from PROJECT_SCHEME where
+		id=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.yunzainfo.pitcher.plugin.project.entity.Scheme">
+		update PROJECT_SCHEME
+		<set>
+			<if test="fileName != null">FILE_NAME=#{fileName,jdbcType=VARCHAR},</if>
+			<if test="uploadTime != null">UPLOAD_TIME=#{uploadTime,jdbcType=VARCHAR},</if>
+			<if test="uploader != null">UPLOADER=#{uploader,jdbcType=VARCHAR},</if>
+			<if test="fileDesc != null">FILE_DESC=#{fileDesc,jdbcType=VARCHAR},</if>
+			<if test="fileType != null">FILE_TYPE=#{fileType,jdbcType=VARCHAR},</if>
+			<if test="status != null">STATUS=#{status,jdbcType=VARCHAR},</if>
+			<if test="code != null">CODE=#{code,jdbcType=VARCHAR},</if>
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="queryById" parameterType="java.lang.String" resultMap="schemeMap">
+		SELECT
+		P.ID,
+		P.NAME,
+		P.DETAIL,
+		P.COMPLETE_NUMBER,
+		P.TYPE,
+		P.CREATE_TIME,
+		P.END_TIME,
+		P.USER_TOTAL,
+		P.LEADER,
+		P.IS_FINISH
+		FROM
+		PROJECT_SCHEME P
+		WHERE P.ID = #{id,jdbcType=VARCHAR}
+	</select>
+		
+
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.TaskAchievementMapper">
+
+<!-- 模糊查询 -->
+		<sql id="sql_Where">
+			<where>
+				A .TASK = T ."ID"
+				<if test="condition.taskId != null">and A .task  = #{condition.taskId}</if>
+				<if test="condition.name != null">and A.name like concat('%',concat(#{condition.name},'%'))</if>
+				<if test="condition.leader != null">and T.leader like concat('%',concat(#{condition.leader},'%'))</if>
+			</where>
+		</sql>
+
+
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.TaskAchievement" id="taskAchievementMap">
+				<id property="id" column="ID"/>
+				<result property="name" column="NAME"/>
+				<result property="desc" column="DESC"/>
+				<!-- 任务信息 -->
+				<association property="task"
+							 javaType="com.yunzainfo.pitcher.plugin.project.entity.ProjectTask">
+					<id property="id" column="ID"/>
+					<result property="name" column="NAME"/>
+					<result property="type" column="TYPE"/>
+					<result property="completeNumber" column="COMPLETE_NUMBER"/>
+					<result property="parentId" column="parent_Id"/>
+					<result property="leader" column="leader"/>
+				</association>
+		</resultMap>
+
+
+	<!-- 查询所有 -->
+	<select id="queryListForPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="taskAchievementMap">
+		<include refid="common.Oracle_Pagination_Head" />
+			SELECT
+			A ."ID",
+			A ."NAME",
+			A ."DESC",
+			T .LEADER,
+			T .COMPLETE_NUMBER
+			FROM
+			TASK_ACHIEVEMENT A,
+			PROJECT_TASK T
+		<include refid="sql_Where"/>
+		<include refid="common.Oracle_Pagination_Tail" />
+	</select>
+
+
+		<!-- 查询总条数 -->
+		<select id="getTotalCount" resultType="int">
+			select count(*) as total from TASK_ACHIEVEMENT
+		</select>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.TaskAchievement">
+		insert into TASK_ACHIEVEMENT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  "ID",
+			  </if>
+			<if test="name != null">
+				"NAME",
+			</if>
+			<if test="desc != null">
+				"DESC",
+			</if>
+			<if test="task != null">
+				TASK
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  #{id,jdbcType=VARCHAR},
+			  </if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="desc != null">
+				#{desc,jdbcType=VARCHAR},
+			</if>
+            <if test="task != null">
+				#{task.id,jdbcType=VARCHAR},
+            </if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from TASK_ACHIEVEMENT where
+		id=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.yunzainfo.pitcher.plugin.project.entity.TaskAchievement">
+		update TASK_ACHIEVEMENT
+		<set>
+			<if test="name != null">"NAME"=#{name,jdbcType=VARCHAR},</if>
+			<if test="desc != null">"DESC"=#{desc,jdbcType=VARCHAR},</if>
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

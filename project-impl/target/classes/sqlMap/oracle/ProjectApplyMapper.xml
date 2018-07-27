@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.ProjectApplyMapper">
+
+<!-- 模糊查询 -->
+		<sql id="sql_Where">
+			<where>
+				<if test="condition.name != null"> a.name like concat('%',concat(#{condition.name},'%'))</if>
+				<if test="condition.applyUser != null">and a.apply_user like concat('%',concat(#{condition.applyUser},'%'))</if>
+				<if test="condition.status != null">and a.status =#{condition.status} </if>
+			</where>
+		</sql>
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.ProjectApply" id="projectApplyMap">
+				<id property="id" column="ID"/>
+				<result property="name" column="NAME"/>
+				<result property="detail" column="DETAIL"/>
+				<result property="type" column="TYPE"/>
+				<result property="status" column="STATUS"/>
+				<result property="applyTime" column="APPLY_TIME"/>
+				<result property="auditTime" column="AUDIT_TIME"/>
+				<result property="auditRemark" column="AUDIT_REMARK"/>
+				<result property="auditUser" column="AUDIT_USER"/>
+				<result property="applyUser" column="APPLY_USER"/>
+		</resultMap>
+		<!-- 查询所有 -->
+		<select id="queryListForPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="projectApplyMap">
+				<include refid="common.Oracle_Pagination_Head" />
+					SELECT
+					A."ID",
+					A."NAME",
+					A.DETAIL,
+					A."TYPE",
+					A."STATUS",
+					A.APPLY_TIME,
+					A.AUDIT_TIME,
+					A.AUDIT_REMARK,
+					A.APPLY_USER,
+					A.AUDIT_USER
+					FROM
+					PROJECT_APPLY A
+					<include refid="sql_Where"/>
+				<include refid="common.Oracle_Pagination_Tail" />
+		</select>
+
+		<!-- 查询所有 -->
+		<select id="queryApplication" resultMap="projectApplyMap">
+			SELECT
+			A."ID",
+			A."NAME",
+			A.DETAIL,
+			A."TYPE",
+			A."STATUS",
+			A.APPLY_TIME,
+			A.AUDIT_TIME,
+			A.AUDIT_REMARK,
+			A.APPLY_USER,
+			A.AUDIT_USER
+			FROM
+			PROJECT_APPLY A
+			WHERE A."STATUS" = 1
+		</select>
+		
+		<!-- 查询总条数 -->
+		<select id="getTotalCount" resultType="int">
+			select count(*) as total from PROJECT_APPLY
+		</select>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.ProjectApply">
+
+		insert into PROJECT_APPLY
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  "ID",
+			  </if>
+			<if test="name != null">
+				"NAME",
+			</if>
+			<if test="detail != null">
+				"DETAIL",
+			</if>
+			<if test="type != null">
+				"TYPE",
+			</if>
+			<if test="status != null">
+				"STATUS",
+			</if>
+			<if test="applyUser != null">
+				"APPLY_USER",
+			</if>
+			<if test="applyTime != null">
+				"APPLY_TIME",
+			</if>
+			<if test="auditUser != null">
+				"AUDIT_USER",
+			</if>
+			<if test="auditTime != null">
+				"AUDIT_TIME",
+			</if>
+			<if test="auditRemark != null">
+				"AUDIT_REMARK",
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  #{id,jdbcType=VARCHAR},
+			  </if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="detail != null">
+				#{detail,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=NUMERIC},
+			</if>
+			<if test="applyUser != null">
+				#{applyUser,jdbcType=VARCHAR},
+			</if>
+			<if test="applyTime != null">
+				SYSDATE,
+			</if>
+			<if test="auditUser != null">
+				#{auditUser,jdbcType=VARCHAR},
+			</if>
+			<if test="auditTime != null">
+				SYSDATE,
+			</if>
+			<if test="auditRemark != null">
+				#{auditRemark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="java.lang.String">
+		delete from PROJECT_APPLY where
+		id=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.yunzainfo.pitcher.plugin.project.entity.ProjectApply">
+		update PROJECT_APPLY
+		<set>
+			<if test="name != null">name=#{name,jdbcType=VARCHAR},</if>
+			<if test="type != null">type=#{type,jdbcType=VARCHAR},</if>
+			<if test="detail != null">detail=#{detail,jdbcType=VARCHAR},</if>
+			<if test="status != null">status=#{status,jdbcType=NUMERIC},</if>
+			<if test="auditUser != null">audit_user=#{auditUser,jdbcType=VARCHAR},</if>
+			<if test="auditRemark != null">audit_remark=#{auditRemark,jdbcType=VARCHAR},</if>
+			<if test="applyUser != null">apply_user=#{applyUser,jdbcType=VARCHAR},</if>
+			<if test="auditTime != null">audit_time=SYSDATE,</if>
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

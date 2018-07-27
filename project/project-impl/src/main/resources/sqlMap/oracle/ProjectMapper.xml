@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.ProjectMapper">
+
+<!-- 模糊查询 -->
+		<sql id="sql_Where">
+			<where>
+				<if test="condition.projectName != null"> p.name like concat('%',concat(#{condition.projectName},'%'))</if>
+				<if test="condition.type != null">and p.type like concat('%',concat(#{condition.type},'%'))</if>
+			</where>
+		</sql>
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.Project" id="projectMap">
+				<id property="id" column="ID"/>
+				<result property="projectName" column="NAME"/>
+				<result property="projectType" column="TYPE"/>
+				<result property="projectDetail" column="DETAIL"/>
+				<result property="projectCreateTime" column="CREATE_TIME"/>
+				<result property="projectEndTime" column="END_TIME"/>
+				<result property="projectTotalUser" column="USER_TOTAL"/>
+				<result property="projectIsFinish" column="IS_FINISH"/>
+				<result property="completeNumber" column="COMPLETE_NUMBER"/>
+				<!-- 項目總負責人 -->
+				<association property="leader"
+					javaType="com.yunzainfo.pitcher.privilege.entity.BaseUsers">
+					<result property="account" column="account" />
+					<result property="realName" column="real_name" />
+				</association>
+		</resultMap>
+		<!-- 查询所有 -->
+		<select id="queryListForPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="projectMap">
+				<include refid="common.Oracle_Pagination_Head" />
+					SELECT
+					P.NAME,
+					P.DETAIL,
+					P.COMPLETE_NUMBER,
+					P.TYPE,
+					P.CREATE_TIME,
+					P.END_TIME,
+					P.USER_TOTAL,
+					P.LEADER,
+					P.IS_FINISH,
+					U.real_name
+					FROM
+					PROJECT P
+					LEFT JOIN spauth.base_users U ON P.LEADER = U.ACCOUNT
+					<include refid="sql_Where"/>
+				<include refid="common.Oracle_Pagination_Tail" />
+		</select>
+
+		<!-- 查询项目树 -->
+		<select id="getProjectTree"  resultMap="projectMap">
+			SELECT
+			P.ID,
+			P.NAME,
+			P.COMPLETE_NUMBER,
+			P.DETAIL,
+			P.TYPE,
+			P.CREATE_TIME,
+			P.END_TIME,
+			P.USER_TOTAL,
+			P.LEADER,
+			P.IS_FINISH
+			FROM
+			PROJECT P
+		</select>
+
+		<!-- 查询总条数 -->
+		<select id="getTotalCount" resultType="int">
+			select count(*) as total from PROJECT
+		</select>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.Project">
+
+		insert into PROJECT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  "ID",
+			  </if>
+			<if test="projectName != null">
+				"NAME",
+			</if>
+			<if test="projectType != null">
+				"TYPE",
+			</if>
+			<if test="projectDetail != null">
+				"DETAIL",
+			</if>
+			<if test="projectTotalUser != null">
+				"USER_TOTAL",
+			</if>
+			<if test="projectCreateTime != null">
+				"CREATE_TIME",
+			</if>
+			<if test="projectEndTime != null">
+				"END_TIME",
+			</if>
+			<if test="leader != null">
+				"LEADER",
+			</if>
+			<if test="completeNumber != null">
+				"COMPLETE_NUMBER",
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  #{id,jdbcType=VARCHAR},
+			  </if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="projectType != null">
+				#{projectType,jdbcType=VARCHAR},
+			</if>
+			<if test="projectDetail != null">
+				#{projectDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="projectTotalUser != null">
+				#{projectTotalUser,jdbcType=NUMERIC},
+			</if>
+			<if test="projectCreateTime != null">
+				SYSDATE,
+			</if>
+			<if test="projectEndTime != null">
+				#{projectEndTime,jdbcType=DATE},
+			</if>
+			<if test="leader != null">
+				#{leader.account,jdbcType=VARCHAR,javaType=String},
+			</if>
+			<if test="completeNumber != null">
+				#{completeNumber,jdbcType=NUMERIC},
+			</if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from "project" where
+		id=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.yunzainfo.pitcher.plugin.project.entity.Project">
+		update "project"
+		<set>
+			<if test="bookName != null">book_name=#{bookName,jdbcType=VARCHAR},</if>
+			<if test="author != null">author=#{author,jdbcType=VARCHAR},</if>
+			<if test="publisher != null">publisher=#{publisher,jdbcType=VARCHAR},</if>
+			<if test="publishDate != null">publish_date=#{publishDate,jdbcType=VARCHAR},</if>
+			<if test="bookBrief != null">book_brief=#{bookBrief,jdbcType=VARCHAR},</if>
+			<if test="bookIsbn != null">book_isbn=#{bookIsbn,jdbcType=VARCHAR},</if>
+			<if test="totalCount != null">total_count=#{totalCount,jdbcType=VARCHAR},</if>
+			<if test="completeNumber != null">complete_number=#{completeNumber,jdbcType=VARCHAR},</if>
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+
+
+	<select id="queryById" parameterType="java.lang.String" resultMap="projectMap">
+		SELECT
+		P.ID,
+		P.NAME,
+		P.DETAIL,
+		P.COMPLETE_NUMBER,
+		P.TYPE,
+		P.CREATE_TIME,
+		P.END_TIME,
+		P.USER_TOTAL,
+		P.LEADER,
+		P.IS_FINISH
+		FROM
+		PROJECT P
+		WHERE P.ID = #{id,jdbcType=VARCHAR}
+	</select>
+		
+
+</mapper>

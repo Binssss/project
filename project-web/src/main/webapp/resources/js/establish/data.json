@@ -1,0 +1,27 @@
+[
+  {
+    "moduleId": "453",
+    "parent": null,
+    "children": [{
+      "moduleId": "450",
+      "parent": null,
+      "children": [],
+      "projectName": "国际高铁合作学院",
+      "parentId": "453",
+      "projectIsFinish": 1,
+      "projectCreateTime": "1522425600000",
+      "projectDetail": "教学成果奖",
+      "projectType": "国家级",
+      "projectEndTime": "1522425600000",
+      "leader": "老六"
+    }],
+    "projectName": "轨道交通学院",
+    "parentId": "453",
+    "projectIsFinish": 1,
+    "projectCreateTime": "1522425600000",
+    "projectDetail": "教学成果奖",
+    "projectType": "国家级",
+    "projectEndTime": "1522425600000",
+    "leader": "老六"
+  }
+]

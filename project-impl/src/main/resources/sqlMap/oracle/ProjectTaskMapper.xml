@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.ProjectTaskMapper">
+
+<!-- 模糊查询 -->
+		<sql id="sql_Where">
+			<where>
+				<if test="condition.projectId != null"> T.project_name = #{condition.projectId}</if>
+				<if test="condition.parentId != null">and T.parent_id  = #{condition.parentId}</if>
+				<if test="condition.name != null">and T.name like concat('%',concat(#{condition.name},'%'))</if>
+				<if test="condition.leader != null">and T.leader like concat('%',concat(#{condition.leader},'%'))</if>
+			</where>
+		</sql>
+
+	<sql id="sql_Where_task">
+		<where>
+            <if test="condition.parentId == null"> T.parent_id is NULL</if>
+			<if test="condition.projectId != null">AND T.project_name = #{condition.projectId}</if>
+			<if test="condition.name != null">and T.name like concat('%',concat(#{condition.name},'%'))</if>
+			<if test="condition.leader != null">and T.leader like concat('%',concat(#{condition.leader},'%'))</if>
+		</where>
+	</sql>
+
+
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.ProjectTask" id="projectTaskMap">
+				<id property="id" column="ID"/>
+				<result property="name" column="NAME"/>
+				<result property="type" column="TYPE"/>
+				<result property="content" column="CONTENT"/>
+				<result property="completeNumber" column="COMPLETE_NUMBER"/>
+				<result property="parentId" column="parent_Id"/>
+				<result property="projectName" column="project_Name"/>
+				<result property="totalNumber" column="total_Number"/>
+				<result property="leader" column="leader"/>
+				<result property="startTime" column="start_Time"/>
+				<result property="endTime" column="end_time"/>
+
+		</resultMap>
+		<!-- 查询所有 -->
+		<select id="queryListForPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="projectTaskMap">
+				<include refid="common.Oracle_Pagination_Head" />
+						SELECT
+						T ."ID",
+						T ."NAME",
+						T . TYPE,
+						T .TOTAL_NUMBER,
+						T ."CONTENT",
+						T .COMPLETE_NUMBER,
+						T .PARENT_ID,
+						T .PROJECT_NAME,
+						T .LEADER,
+						T .END_TIME,
+						T .START_TIME
+						FROM
+						PROJECT_TASK T
+					<include refid="sql_Where_task"/>
+				<include refid="common.Oracle_Pagination_Tail" />
+		</select>
+
+	<!-- 查询所有 -->
+	<select id="queryListForChildPage" parameterType="com.yunzainfo.pitcher.common.vo.Criteria" resultMap="projectTaskMap">
+		<include refid="common.Oracle_Pagination_Head" />
+		SELECT
+		T ."ID",
+		T ."NAME",
+		T . TYPE,
+		T .TOTAL_NUMBER,
+		T ."CONTENT",
+		T .COMPLETE_NUMBER,
+		T .PARENT_ID,
+		T .PROJECT_NAME,
+		T .LEADER,
+		T .END_TIME,
+		T .START_TIME
+		FROM
+		PROJECT_TASK T
+		<include refid="sql_Where"/>
+		<include refid="common.Oracle_Pagination_Tail" />
+	</select>
+
+	<!-- 查询所有 -->
+	<select id="queryListForChild" parameterType="int" resultType="int" >
+		SELECT
+		count(*)
+		FROM
+		PROJECT_TASK T
+		WHERE T.PARENT_ID = #{id,jdbcType=VARCHAR}
+	</select>
+
+
+		<!-- 查询总条数 -->
+		<select id="getTotalCount" resultType="int">
+			select count(*) as total from PROJECT_TASK
+		</select>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.ProjectTask">
+		insert into PROJECT_TASK
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  "ID",
+			  </if>
+			<if test="name != null">
+				"NAME",
+			</if>
+			<if test="type != null">
+				"TYPE",
+			</if>
+			<if test="totalNumber != null">
+				"TOTAL_NUMBER",
+			</if>
+			<if test="content != null">
+				"CONTENT",
+			</if>
+			<if test="completeNumber != null">
+				"COMPLETE_NUMBER",
+			</if>
+            <if test="startTime != null">
+                "START_TIME",
+            </if>
+			<if test="endTime != null">
+				"END_TIME",
+			</if>
+			<if test="leader != null">
+				"LEADER",
+			</if>
+			<if test="parentId != null">
+				"PARENT_ID",
+			</if>
+			<if test="projectName != null">
+				"PROJECT_NAME",
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  #{id,jdbcType=VARCHAR},
+			  </if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="totalNumber != null">
+				#{totalNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="completeNumber != null">
+				#{completeNumber,jdbcType=VARCHAR},
+			</if>
+            <if test="startTime != null">
+                SYSDATE,
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=DATE},
+            </if>
+            <if test="leader != null">
+                #{leader,jdbcType=VARCHAR,javaType=String},
+            </if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="int">
+		delete from PROJECT_TASK where
+		id=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="update" parameterType="com.yunzainfo.pitcher.plugin.project.entity.Project">
+		update PROJECT_TASK
+		<set>
+			<if test="name != null">"NAME"=#{name,jdbcType=VARCHAR},</if>
+			<if test="type != null">"TYPE"=#{type,jdbcType=VARCHAR},</if>
+			<if test="totalNumber != null">total_number=#{totalNumber,jdbcType=VARCHAR},</if>
+			<if test="content != null">content=#{content,jdbcType=VARCHAR},</if>
+			<if test="completeNumber != null">complete_number=#{completeNumber,jdbcType=VARCHAR},</if>
+			<if test="leader != null">leader=#{leader,jdbcType=VARCHAR},</if>
+			<if test="startTime != null">start_time=#{startTime,jdbcType=DATE},</if>
+			<if test="endTime != null">end_time=#{endTime,jdbcType=DATE},</if>
+		</set>
+		where id=#{id,jdbcType=VARCHAR}
+	</update>
+
+	<select id="queryById" parameterType="java.lang.String" resultMap="projectTaskMap">
+		SELECT
+		T ."ID",
+		T ."NAME",
+		T . TYPE,
+		T .TOTAL_NUMBER,
+		T ."CONTENT",
+		T .COMPLETE_NUMBER,
+		T .PARENT_ID,
+		T .PROJECT_NAME,
+		T .LEADER,
+		T .END_TIME,
+		T .START_TIME
+		FROM
+		PROJECT_TASK T
+		WHERE T ."ID" = #{id,jdbcType=VARCHAR}
+	</select>
+
+
+	<!-- 查找父任务，根据项目ID查询 -->
+	<select id="queryTreeForProject" parameterType="java.lang.String" resultMap="projectTaskMap">
+		SELECT
+		T ."ID",
+		T ."NAME",
+		T . TYPE,
+		T .TOTAL_NUMBER,
+		T ."CONTENT",
+		T .COMPLETE_NUMBER,
+		T .PARENT_ID,
+		T .PROJECT_NAME,
+		T .LEADER,
+		T .END_TIME,
+		T .START_TIME
+		FROM
+		PROJECT_TASK T
+		WHERE T .PROJECT_NAME = #{projectId,jdbcType=VARCHAR}
+		AND T.parent_id is NULL
+	</select>
+
+	<!-- 查找子任务，根据父任务ID查询 -->
+	<select id="queryTreeForParent" parameterType="java.lang.String" resultMap="projectTaskMap">
+		SELECT
+		T ."ID",
+		T ."NAME",
+		T . TYPE,
+		T .TOTAL_NUMBER,
+		T ."CONTENT",
+		T .COMPLETE_NUMBER,
+		T .PARENT_ID,
+		T .PROJECT_NAME,
+		T .LEADER,
+		T .END_TIME,
+		T .START_TIME
+		FROM
+		PROJECT_TASK T
+		WHERE T .PARENT_ID = #{parentId,jdbcType=VARCHAR}
+	</select>
+
+		
+
+</mapper>

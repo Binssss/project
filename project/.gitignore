@@ -1,0 +1,8 @@
+.idea/
+*.iml
+/project-api/target/
+/project-impl/target/
+/project-web/target/
+
+/project-impl/src/main/resources/rebel.xml
+/project-web/src/main/resources/rebel.xml

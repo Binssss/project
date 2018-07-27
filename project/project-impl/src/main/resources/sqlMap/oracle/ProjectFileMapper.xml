@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunzainfo.pitcher.plugin.project.dao.ProjectFileMapper">
+
+		<!--结果集 -->
+		<resultMap type="com.yunzainfo.pitcher.plugin.project.entity.ProjectFile" id="projectFileMap">
+				<id property="id" column="ID"/>
+				<result property="fileName" column="FILE_NAME"/>
+				<result property="fileDesc" column="FILE_DESC"/>
+				<result property="fileData" column="FILE_DATA"/>
+				<result property="projectName" column="PROJECT_NAME"/>
+				<result property="uploadUser" column="UPLOAD_USER"/>
+		</resultMap>
+
+
+	<!-- 插入 -->
+	<insert id="insert" parameterType="com.yunzainfo.pitcher.plugin.project.entity.ProjectFile">
+
+		insert into PROJECT_FILE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			  <if test="id != null">
+				  id,
+			  </if>
+			<if test="fileName != null">
+				file_name,
+			</if>
+			<if test="fileDesc != null">
+				file_desc,
+			</if>
+			<if test="fileData != null">
+				file_data,
+			</if>
+			<if test="projectName != null">
+				project_name,
+			</if>
+			<if test="uploadUser != null">
+				upload_user,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName != null">
+				#{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileDesc != null">
+				#{fileDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="fileData != null">
+				#{fileData,jdbcType=VARCHAR},
+			</if>
+			<if test="projectName != null">
+				#{projectName,jdbcType=VARCHAR},
+			</if>
+			<if test="uploadUser != null">
+				#{uploadUser,jdbcType=VARCHAR},
+			</if>
+
+		</trim>
+	</insert>
+
+
+</mapper>
